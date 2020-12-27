@@ -22,7 +22,7 @@ def scan_with_picture(imgURL):
     buf_arr = np.fromstring(buf_decode, dtype=np.uint8)
 
     image =  cv.imdecode(buf_arr, cv.IMREAD_UNCHANGED)
-
+    
     ap = argparse.ArgumentParser()
     ap.add_argument("-o", "--output", type=str, default="barcodes_image.csv",
                     help="Path to output csv file")
@@ -34,7 +34,7 @@ def scan_with_picture(imgURL):
     found = set()
 
     barcodes = decode(image)
-
+    print("decoded=> ",len(barcodes))
     for barcode in barcodes:
         (x, y, w, h) = barcode.rect
         cv.rectangle(image, (x, y), (x + w, y + h), (0, 0, 255), 2)
@@ -54,7 +54,7 @@ def scan_with_picture(imgURL):
         print("[INFO] Found {} barcode: {}".format(barcodeType, barcodeData))
 
     csv.close()
-    cv.imshow("Image", image)
+    cv.imshow("image", image)
     cv.waitKey(0)
     cv.destroyAllWindows()
 

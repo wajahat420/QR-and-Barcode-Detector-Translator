@@ -31,7 +31,7 @@
 		
 		<h1>PDF</h1>
 		<input id="uploadPdf" onchange="file('uploadPdf')" name="upload pdf" type="file" accept="application/pdf" />
-		<!-- <img id="image" src="" alt="not entered yet"/> -->
+		<input onclick="extractPdfBarcodes()" type="button" value="Extract Barcodes"/>
 
 		<h1 id="chck">Image</h1>
 		<input id="uploadImg" onchange="file('uploadImg')"  type="file" />
@@ -42,11 +42,12 @@
 		<br/>
 		<br/>
 		<input onclick="extractImageBarcodes()" type="button" value="Extract Barcodes"/>
-		<a href="http://localhost:5051/checking">get</a>
+	
 
 	</body>
 	<script>
 		let imageBase64 = ""
+		let pdfBase64 = ""
 		extractImageBarcodes = () =>{
 			if(imageBase64 !== ""){
 				$.ajax({
@@ -59,20 +60,32 @@
 			}
 
 		}
+		extractPdfBarcodes = () =>{
+			if(pdfBase64 !== ""){
+				$.ajax({
+					url: "/pdfBase64",
+					type: "POST",
+					data: { text: pdfBase64 }
+				})
+				.then(res=>console.log(res))
+			}else{
+				alert("Kindly Upload An Image First")
+			}
 
+		}
 		file = (id) =>  {
-
-			let imageSrc =  document.getElementById("image")
-			let uploadImage = document.getElementById(id)
 
 			const reader = new FileReader();
 			reader.onload = () => {
-				
-				imageSrc.src = reader.result	
-				imageBase64 = reader.result		
+				if(id === "uploadImg"){
+					document.getElementById("image").src = reader.result	
+					imageBase64 = reader.result		
+				}else{
+					pdfBase64 = reader.result
+				}
 			}
 
-			reader.readAsDataURL(uploadImage.files[0]);
+			reader.readAsDataURL(document.getElementById(id).files[0]);
 			
 			reader.onloadstart = () => {
 			console.log("load start")
