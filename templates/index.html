@@ -63,7 +63,7 @@
 		extractPdfBarcodes = () =>{
 			if(pdfBase64 !== ""){
 				$.ajax({
-					url: "/pdfBase64",
+					url: "/pdfBase64GetData",
 					type: "POST",
 					data: { text: pdfBase64 }
 				})
@@ -81,7 +81,14 @@
 					document.getElementById("image").src = reader.result	
 					imageBase64 = reader.result		
 				}else{
+
 					pdfBase64 = reader.result
+					$.ajax({
+						url: "/pdfBase64Upload",
+						type: "POST",
+						data: { text: pdfBase64 }
+					})
+					.then(res=>console.log(res))
 				}
 			}
 

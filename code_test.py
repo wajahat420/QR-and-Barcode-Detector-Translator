@@ -34,22 +34,12 @@ def scan_with_pdf():
         name = str(count) + '.jpg'
         im.save(name)
 
-    time.sleep(10)
-    # path = r'C:\Users\saad9\Desktop\FYP\CodeScanner'
-    # file location
-    path = glob.glob("*.jpg")
-    cv_img = []
-
-    for multiple_files in path:
-        img = cv2.imread(multiple_files)
-        cv_img.append(img)
-    
+    # time.sleep(4)
 
     for x in range(count):
-        image = cv_img[x]
-        barcodes = decode(img)
-        print("decoded=> ",barcodes)
-        found = set()
+        image = cv2.imread(str(x+1)+".jpg")
+        barcodes = decode(image)
+        print("decoded=> ",len(barcodes))
 
         for barcode in barcodes:
             (x, y, w, h) = barcode.rect
@@ -62,16 +52,15 @@ def scan_with_pdf():
             cv2.putText(image, text, (x, y - 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
-            # if barcodeData not in found:
-                # csv.write("{},{}\n".format(datetime.datetime.now(), barcodeData))
-                # csv.flush()
-                # found.add(barcodeData)
-                # winsound.Beep(frequency, duration)
+            if barcodeData not in found:
+                csv.write("{},{}\n".format(datetime.datetime.now(), barcodeData))
+                csv.flush()
+
             print("[INFO] Found {} barcode: {}".format(barcodeType, barcodeData))
         print("\n")
     workbook.save("example.xls")
 
-    cv2.imshow('Result', img)
+    cv2.imshow('Result', image)
     if cv2.waitKey(0):
         cv2.destroyAllWindows()
         # break
