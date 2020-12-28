@@ -9,7 +9,7 @@ from code_test import *
 def textTospeech():
 
     imageURL = request.form['text']
-    scan_with_picture(imageURL)
+    scan_with_picture(imageURL) 
     return "response from imageBase64"
 
 

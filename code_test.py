@@ -7,6 +7,9 @@ import minecart
 import glob
 import xlwt
 import base64
+import csv
+import argparse
+import datetime
 
 
 def convertBase64ToPdf(pdfURL):
@@ -23,8 +26,14 @@ def scan_with_pdf():
 
     pdffile = open('generated.pdf', 'rb')
     doc = minecart.Document(pdffile)
-
+        
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-o", "--output", type=str, default="barcodes_pdfs.csv",
+                    help="Path to output csv file")
+    args = vars(ap.parse_args())
+    csv = open(args["output"], "w")
     page = doc.get_page(0)  # getting a single page
+    csv.write("{},{},{}\n".format("Date", "Barcode Data","Barcode Type"))
 
     count = 0
     # iterating through all pages
@@ -41,6 +50,8 @@ def scan_with_pdf():
         barcodes = decode(image)
         print("decoded=> ",len(barcodes))
 
+        found = set()
+
         for barcode in barcodes:
             (x, y, w, h) = barcode.rect
             cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 255), 2)
@@ -53,14 +64,14 @@ def scan_with_pdf():
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
             if barcodeData not in found:
-                csv.write("{},{}\n".format(datetime.datetime.now(), barcodeData))
+                csv.write("{},{},{}\n".format(datetime.datetime.now(), barcodeData,barcodeType))
                 csv.flush()
 
-            print("[INFO] Found {} barcode: {}".format(barcodeType, barcodeData))
+            print("[INFO] Found {} barcode: {} ".format(barcodeType, barcodeData))
         print("\n")
     workbook.save("example.xls")
 
-    cv2.imshow('Result', image)
-    if cv2.waitKey(0):
-        cv2.destroyAllWindows()
+    # cv2.imshow('Result', image)
+    # if cv2.waitKey(0):
+    #     cv2.destroyAllWindows()
         # break

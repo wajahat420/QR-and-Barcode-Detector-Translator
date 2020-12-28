@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Chatbot</title>
+	<title>Code scanner</title>
 
   <head>
     <meta charset="UTF-8" />
@@ -13,9 +13,6 @@
 
 	<link rel="stylesheet" href="../static/styles/main.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-	<!-- <script src="{{url_for('static',filename='script.js')}}"></script>
-	<script src="{{url_for('static',filename='onpageLoad.js')}}"></script> -->
-
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -27,22 +24,36 @@
 	 </style>
 	 
 </head>
-  	<body >
+<body style="background: #141414;">
+	<nav>
+				<ul class="navbar" style="display: flex; justify-content: center;">
+					<li>QR and Barcode Scanner</li>
+				  </ul>
+	</nav>
+	<div class="container">
+		<div class="box" >
+			<h2 style="color: white; text-transform: uppercase;  margin-top: 30px;
+			">Upload through PDF</h2>
+			<label style='color: whitesmoke; margin-left: 15%;margin-top: 20%;'>
+
+			<input id="uploadPdf" onchange="file('uploadPdf')" name="upload pdf" type="file" accept="application/pdf" />
 		
-		<h1>PDF</h1>
-		<input id="uploadPdf" onchange="file('uploadPdf')" name="upload pdf" type="file" accept="application/pdf" />
-		<input onclick="extractPdfBarcodes()" type="button" value="Extract Barcodes"/>
-
-		<h1 id="chck">Image</h1>
-		<input id="uploadImg" onchange="file('uploadImg')"  type="file" />
-		<img id="image" width="200" height="300" 
-			src=""
-			alt="not entered yet"/>
-
-		<br/>
-		<br/>
-		<input onclick="extractImageBarcodes()" type="button" value="Extract Barcodes"/>
-	
+			</label>
+		</div>
+		<div class="box">
+			<h2 id="chck" style="color: white; text-transform: uppercase;margin-top: 30px;">Upload through Image</h2>
+			<label style='color: whitesmoke; margin-left: 15%;margin-top: 20%;'>
+				<input id="uploadImg" onchange="file('uploadImg')"  type="file" />
+			</label>
+			<img style="display: none;" id="image" width="200" height="300" 
+				src=""
+				alt="Please Upload a Picture"/>
+		</div> 
+	</div>
+	<div style="position: absolute;bottom: 0;margin-left: 29%;">
+				<button onclick="extractPdfBarcodes()" type="button" value="Extract Barcodes" class="inputbutton" > Extract PDF Barcodes</button>
+		<button onclick="extractImageBarcodes()" type="button" value="Extract Barcodes" class="inputbutton" > Extract IMG Barcodes</button>
+	</div>	
 
 	</body>
 	<script>
@@ -55,6 +66,7 @@
 					type: "POST",
 					data: { text: imageBase64 }
 				})
+				.then(res=>alert("Scanning Operation Is Completed."))
 			}else{
 				alert("Kindly Upload An Image First")
 			}
@@ -67,9 +79,9 @@
 					type: "POST",
 					data: { text: pdfBase64 }
 				})
-				.then(res=>console.log(res))
+				.then(res=>alert("Scanning Operation Is Completed."))
 			}else{
-				alert("Kindly Upload An Image First")
+				alert("Kindly Upload A Pdf First")
 			}
 
 		}
@@ -78,6 +90,7 @@
 			const reader = new FileReader();
 			reader.onload = () => {
 				if(id === "uploadImg"){
+					document.getElementById("image").style.display = "block"
 					document.getElementById("image").src = reader.result	
 					imageBase64 = reader.result		
 				}else{

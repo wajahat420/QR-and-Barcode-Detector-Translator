@@ -32,7 +32,7 @@ def scan_with_picture(imgURL):
 
     csv = open(args["output"], "w")
     found = set()
-
+    csv.write("{},{},{}\n".format("Date", "Barcode Data","Barcode Type"))
     barcodes = decode(image)
     print("decoded=> ",len(barcodes))
     for barcode in barcodes:
@@ -47,14 +47,14 @@ def scan_with_picture(imgURL):
                     cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
         if barcodeData not in found:
-            csv.write("{},{}\n".format(datetime.datetime.now(), barcodeData))
+            csv.write("{},{},{}\n".format(datetime.datetime.now(), barcodeData,barcodeType))
             csv.flush()
             found.add(barcodeData)
             # winsound.Beep(frequency, duration)
         print("[INFO] Found {} barcode: {}".format(barcodeType, barcodeData))
 
     csv.close()
-    cv.imshow("image", image)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+    # cv.imshow("image", image)
+    # cv.waitKey(0)
+    # cv.destroyAllWindows()
 
