@@ -7,7 +7,6 @@ import datetime
 
 from pdf2image import convert_from_path, convert_from_bytes
 
-
 def convertBase64ToPdf(pdfURL):
     comma = pdfURL.find(",")
     pdfURL = pdfURL[comma+1:]
@@ -77,7 +76,7 @@ def scan_with_pdf():
             for obj in data:
                 print(obj)
                 writer.writerow([datetime.datetime.now(),obj["operation"], obj["operator"]])
-                
+
 # pdffile = open('2222.pdf', 'rb')
 # doc = minecart.Document(pdffile)
 

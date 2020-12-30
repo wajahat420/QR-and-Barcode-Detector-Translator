@@ -5,9 +5,6 @@ import base64
 import numpy as np
 import csv
 
-frequency = 2500
-duration = 1000
-
 def scan_with_picture(imgURL):
 
     comma = imgURL.find(",")
