@@ -1,18 +1,11 @@
 
-import cv2
-import numpy as np
+import cv2 as cv
 from pyzbar.pyzbar import decode
-import time
-import minecart
-import glob
-import xlwt
 import base64
-import csv
-import argparse
+import csv  
 import datetime
 
 from pdf2image import convert_from_path, convert_from_bytes
-import fitz
 
 
 def convertBase64ToPdf(pdfURL):
@@ -24,20 +17,8 @@ def convertBase64ToPdf(pdfURL):
 
 
 def scan_with_pdf():
-    workbook = xlwt.Workbook()
-    sheet = workbook.add_sheet("Sheet 1")
-    style = xlwt.easyxf('font: bold 1')
 
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-o", "--output", type=str, default="barcodes_pdfs.csv",
-                    help="Path to output csv file")
-    args = vars(ap.parse_args())
-    csv = open(args["output"], "w")
-    # page = doc.get_page(0)  # getting a single page
-    csv.write("{},{},{}\n".format("Date", "Barcode Data","Barcode Type"))
-
-        
-    pages = convert_from_path('my.pdf', 500)
+    pages = convert_from_path('actual.pdf', 500)
 
     count = 0
     for page in pages:
@@ -46,39 +27,57 @@ def scan_with_pdf():
 
 
     for x in range(count):
-        image = cv2.imread(str(x+1)+".jpg")
-        # image = cv2.imread("my.png")
-        barcodes = decode(image)
-        print("decoded=> ",len(barcodes))
+        image = cv.imread(str(x+1)+".jpg")
+        image = cv.resize(image, (1664,2296), interpolation = cv.INTER_AREA)
 
-        found = set()
+        imageSplittedInRows = []
+        start = 500
 
-        for barcode in barcodes:
-            (x, y, w, h) = barcode.rect
-            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 0, 255), 2)
+        for i in range(10):
+            imgCropped = image[start:start + 155,:]
+            start += 155
+            imageSplittedInRows.append(imgCropped)
 
-            barcodeData = barcode.data.decode("utf-8")
-            barcodeType = barcode.type
+        print("decoded=> ",len(imageSplittedInRows))
 
-            text = "{} ({})".format(barcodeData, barcodeType)
-            cv2.putText(image, text, (x, y - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+        data = []
+        for image in imageSplittedInRows:
+            
+            barcodes = decode(image)
+            count = 0
+            for barcode in barcodes:
+                (x, y, w, h) = barcode.rect
+                cv.rectangle(image, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-            if barcodeData not in found:
-                csv.write("{},{},{}\n".format(datetime.datetime.now(), barcodeData,barcodeType))
-                csv.flush()
+                barcodeData = barcode.data.decode("utf-8")
+                if count == 0:
+                    if x < 900:  # it is an opration
+                        data.append({
+                            "operation" : barcodeData,
+                            "operator" : ""
+                        })
+                    else:  # it is an operator
+                        data.append({
+                            "operation" : "",
+                            "operator" : barcodeData
+                        })
+                else:
+                    if x < 900: # it is an opration
+                        data[len(data) - 1]["operation"] = barcodeData
+                    else:
+                        data[len(data) - 1]["operator"] = barcodeData
 
-            print("[INFO] Found {} barcode: {} ".format(barcodeType, barcodeData))
-        print("\n")
-    workbook.save("example.xls")
+                count += 1
+                if count == 2:
+                    count = 0
 
-    # cv2.imshow('Result', image)
-    # if cv2.waitKey(0):
-    #     cv2.destroyAllWindows()
-        # break
-# scan_with_pdf()
-
-
+        with open('barcodes_pdfs.csv', mode='w',newline="") as file:
+            writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            writer.writerow(["DATE", "OPERATION","OPERATOR"])
+            for obj in data:
+                print(obj)
+                writer.writerow([datetime.datetime.now(),obj["operation"], obj["operator"]])
+                
 # pdffile = open('2222.pdf', 'rb')
 # doc = minecart.Document(pdffile)
 
