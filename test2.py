@@ -1,43 +1,94 @@
-# Python program to illustrate HoughLine 
-# method for line detection 
-import cv2 
-import numpy as np 
-  
-# Reading the required image in  
-# which operations are to be done.  
-# Make sure that the image is in the same  
-# directory in which this python program is 
-img = cv2.imread('actual.jpg') 
-img = img[600:,:]
+from pyzbar.pyzbar import decode
+import cv2 as cv
+import datetime
+import base64
+import numpy as np
+import csv
+import pytesseract
+from pytesseract import Output
 
-gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-edges = cv2.Canny(gray,50,150,apertureSize = 3)
-print(edges)
-lines = cv2.HoughLines(edges,2,np.pi/2,30)
-# print("lines",lines)
-for line in lines:
-      for rho,theta in line:
-            if theta >= 1.57:
-                  a = np.cos(theta)
-                  b = np.sin(theta)
-                  x0 = a*rho
-                  y0 = b*rho
-                  x1 = int(x0 + 1000*(-b))
-                  y1 = int(y0 + 1000*(a))
-                  x2 = int(x0 - 1000*(-b))
-                  y2 = int(y0 - 1000*(a))
-                  
-                  # print(rho, "theeta = ",theta)
-                  print('(',x0,y0,')','(',x1,y1,')','(',x2,y2,')')
-                  cv2.line(img,(x2-200,y2-200),(x2,y2),(0,0,255),2)
 
-   
-# cv2.imshow("lines", lines)
-cv2.imshow("img", img)
-# cv2.imshow("edges", edges)
+def getOperationData(imgsArr):
+      operations = []
 
-# cv2.imshow("Threshold", threshold)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-# All the changes made in the input image are finally 
-# written on a new image houghlines.jpg
+      for image in imgsArr:    
+            barcodes = decode(image)
+
+            for barcode in barcodes:
+                  barcodeData = barcode.data.decode("utf-8")
+                  operations.append(barcodeData)
+      return operations
+               
+
+def getOperatorData(imgsArr):
+      operators = []
+
+      for image in imgsArr:
+            barcodes = decode(image)
+
+            for barcode in barcodes:
+                  barcodeData = barcode.data.decode("utf-8")
+                  operators.append(barcodeData)
+      return operators
+
+def scan_with_picture(imgURL=''):
+      global img, initial_start, data, all_y, index, iter_no
+
+      # comma = imgURL.find(",")
+      # imgURL = imgURL[comma+1:]
+      # imgURL = bytes(imgURL, 'utf-8')
+
+      # buf_decode = base64.b64decode(imgURL)
+      # buf_arr = np.fromstring(buf_decode, dtype=np.uint8)
+
+      # image =  cv.imdecode(buf_arr, cv.IMREAD_UNCHANGED)
+
+      # gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+      # (thresh, blackAndWhiteImage) = cv.threshold(gray, 127, 255, cv.THRESH_BINARY)
+
+      image = cv.imread("2.jpg")
+      print(image.shape)
+
+      height, width = image.shape[:2]
+      if height > 2000:
+            image = cv.resize(image, (1200,1900) , interpolation = cv.INTER_AREA)
+      height, width = image.shape[:2]
+
+      image =  image[:,:int(width*0.5)]  #int(width*0.48)
+      cv.imshow("Threshold", image) 
+      cv.waitKey(0)  
+      cv.destroyAllWindows()
+      barcodes = decode(image)
+      print("length= ",len(barcodes))
+
+      operation = [barcodes[0].rect.top,barcodes[0].rect.left] # 0 index = top, 1 index = left
+      operator = [0,0]  # 0 index = top, 1 index = left
+      margin = 80
+
+      # print(operation)
+      for barcode in barcodes:
+            barcodeData = barcode.data.decode("utf-8")
+            top = barcode.rect.top
+            left = barcode.rect.left
+            # print(operation[1])
+            if left > operation[1] + margin : #checking it is opeartor or not
+                  if operator[0] == 0:
+                        operator[0] = top
+                        operator[1]  =left
+                  elif top < operator[0]:
+                        operator[0] = top
+                        operator[1] = left
+
+            else:
+                  if top < operation[0]:
+                        operation[0] = top
+                        operation[1] = left
+            print("barcode",barcodeData,"top",top,"left",left)
+            
+      print("operation",operation)
+      print("operator",operator)
+
+          
+scan_with_picture("")
+
+

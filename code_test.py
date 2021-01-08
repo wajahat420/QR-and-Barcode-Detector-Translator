@@ -17,7 +17,7 @@ def convertBase64ToPdf(pdfURL):
 
 def scan_with_pdf():
 
-    pages = convert_from_path('actual.pdf', 500)
+    pages = convert_from_path('test1.pdf', 500)
 
     count = 0
     for page in pages:
@@ -32,7 +32,7 @@ def scan_with_pdf():
         imageSplittedInRows = []
         start = 500
 
-        for i in range(10):
+        for i in range(6):
             imgCropped = image[start:start + 155,:]
             start += 155
             imageSplittedInRows.append(imgCropped)
@@ -76,7 +76,7 @@ def scan_with_pdf():
             for obj in data:
                 print(obj)
                 writer.writerow([datetime.datetime.now(),obj["operation"], obj["operator"]])
-
+scan_with_pdf()
 # pdffile = open('2222.pdf', 'rb')
 # doc = minecart.Document(pdffile)
 

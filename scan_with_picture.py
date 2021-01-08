@@ -43,7 +43,7 @@ def scan_with_picture(imgURL=''):
     for image in imageSplittedInRows:
         
         barcodes = decode(image)
-        print("lenght",len(barcodes))
+        # print("lenght",len(barcodes))
         count = 0
         for barcode in barcodes:
             (x, y, w, h) = barcode.rect
@@ -87,7 +87,7 @@ def scan_with_picture(imgURL=''):
             count += 1
             if count == 2:
                 count = 0
-    print("y =",len(all_y))
+    # print("y =",len(all_y))
     with open('barcodes_image.csv', mode='w',newline="") as file:
         writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(["DATE", "OPERATION","OPERATOR"])
