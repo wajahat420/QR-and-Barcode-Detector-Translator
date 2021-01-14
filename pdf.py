@@ -1,4 +1,3 @@
-
 import cv2 as cv
 from pyzbar.pyzbar import decode
 import base64
@@ -83,7 +82,7 @@ def scan_with_pdf():
 
     for x in range(count):
         image = cv.imread(str(x+1)+".jpg")
-        # image = cv.imread(pagesArr[x])
+
         column1 = image[690:,220:1340] 
         column2 = image[690:,1290:] 
 
@@ -103,8 +102,8 @@ def scan_with_pdf():
             start += betweenDist    
             col1_array.append(col1)
             col2_array.append(col2)
-            cv.imshow('col'+str(i), col2)
-        cv.waitKey(0)
+        #     cv.imshow('col'+str(i), col2)
+        # cv.waitKey(0)
 
         col1 =  getScannedData(col1_array, counter=0)
         col2 =  getScannedData(col2_array, counter=12)
@@ -114,76 +113,33 @@ def scan_with_pdf():
         print("operation",operationMissing)
         print("moreThanTwo",moreThanTwo)
         print("data",len(data))
-        # operatorData =  getOperatorData(imageSplittedInRows["operatorImgs"])
-        # print(len(operationData))
-        with open('barcodes_image.csv', mode='w',newline="") as file:
-            writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            writer.writerow(["DATE", "OPERATION","OPERATOR"])
-            
-            for obj in data:
-                    # print("operator : ",operatorData[i],"operation : ",operationData[i])
-                    
-                    # if operatorData[i] == "":
-                    #     print(str(i+1)+" row Operator Missing")
-                    # elif  operationData[i] == "":
-                    #     print(str(i+1)+" row Operation Missing")
-                    # else:
-                    print(obj)
-                    writer.writerow([obj["s.no"],obj["operation"], obj["operation"],datetime.datetime.now()])
 
+  
+    with open('barcodes_image.csv', mode='w',newline="") as file:
+        writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(["DATE", "OPERATION","OPERATOR"])
+        
+        for obj in data:
+                # print("operator : ",operatorData[i],"operation : ",operationData[i])
+                
+                # if operatorData[i] == "":
+                #     print(str(i+1)+" row Operator Missing")
+                # elif  operationData[i] == "":
+                #     print(str(i+1)+" row Operation Missing")
+                # else:
+                print(obj)
+                writer.writerow([obj["s.no"],obj["operation"], obj["operation"],datetime.datetime.now()])
+    msgs = []
+    for i in bothMissing:
+        msgs.append("Error: Both Missing in "+str(i+1)+" row")
+    for i in operationMissing:
+        msgs.append("Error: Operation Missing in "+str(i+1)+" row")
+    for i in operatorMissing:
+        msgs.append("Error: Operator Missing in "+str(i+1)+" row")
+    for i in moreThanTwo:
+        msgs.append("Error: More than two barcodes exists in "+str(i+1)+" row")  
+
+    return msgs
 # scan_with_pdf()
-# pdffile = open('2222.pdf', 'rb')
-# doc = minecart.Document(pdffile)
 
-# count = 0
-# for page in doc.iter_pages():
-#     print("checking",page.images[0],"\n",page.images[0].as_pil())
-#     im = page.images[0].as_pil()  # requires pillow
-#     count = count + 1
-#     name = str(count) + '.jpg'
-#     im.save(name)
-
-
-# def pdf2jpeg(pdf_input_path, jpeg_output_path):
-# args = ["pef2jpeg", # actual value doesn't matter
-#         "-dNOPAUSE",
-#         "-sDEVICE=jpeg",
-#         "-r144",
-#         "-sOutputFile=" + "/home/wajahat/Desktop/qr-and-barcode-detector-translator/",
-#         "b.pdf"]
-
-# encoding = locale.getpreferredencoding()
-# args = [a.encode(encoding) for a in args]
-
-# ghostscript.Ghostscript(*args)
-
-# import tempfile
-# from pdf2image import convert_from_path, convert_from_bytes
-
-
-# from pdf2image import convert_from_path
-# pages = convert_from_path('2222.pdf', 500)
-
-# count = 1
-# for page in pages:
-#     page.save(str(count)+'.jpg', 'JPEG')
-#     count += 1
-
-
-# doc = fitz.open("b.pdf")
-# count = 0
-# for i in range(len(doc)):
-#     for img in doc.getPageImageList(i):
-#         xref = img[0]
-#         pix = fitz.Pixmap(doc, xref)
-#         print("length",xref,img,"\n",pix)
-#         if pix.n < 5:       # this is GRAY or RGB
-#             count += 1
-#             pix.writePNG("%s.png" % (count)) 
-#         else:               # CMYK: convert to RGB first
-#             count += 1
-#             pix1 = fitz.Pixmap(fitz.csRGB, pix)
-#             pix1.writePNG("%s.png" % (count))
-#             pix1 = None
-#         pix = None
 

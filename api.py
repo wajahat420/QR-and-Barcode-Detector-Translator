@@ -22,8 +22,9 @@ def pdfBase64():
 
 @app.route("/pdfBase64GetData", methods=["POST"])
 def pdfBase64GetData():
-    scan_with_pdf()
-    return "response from pdfBase64GetData"
+    msgs =  scan_with_pdf()
+    print(len(msgs),"length")
+    return {"msgs" : msgs}
 
 @app.route('/')
 def home():

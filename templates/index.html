@@ -12,6 +12,8 @@
 	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
 
 	<link rel="stylesheet" href="../static/styles/main.css">
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -20,7 +22,9 @@
 	</script>
 	 <title>C-Boys Scanner</title>
 	 <style>
-
+		 .fa-times:hover{
+			 color: white;
+		 }
 	 </style>
 	 
 </head>
@@ -41,7 +45,7 @@
 			</label>
 		</div>
 		<div style="position: absolute;bottom:-120px;left:23%">
-			<button onclick="extractPdfBarcodes()" type="button" value="Extract Barcodes" class="inputbutton" > Extract PDF Barcodes</button>
+			<button onclick="extractPdfBarcodes()" id="pdfBtn"  type="button" value="Extract Barcodes" class="inputbutton" > Extract PDF Barcodes</button>
 		</div>	
 		<div class="box">
 			<h2 id="chck" style="color: white; text-transform: uppercase;margin-top: 30px;">Upload through Image</h2>
@@ -55,6 +59,12 @@
 			<div style="position: absolute;bottom:-120px;right:23%">
 				<button onclick="extractImageBarcodes()" type="button" value="Extract Barcodes" class="inputbutton" > Extract IMG Barcodes</button>
 			</div>	
+	</div>
+	<div id="errorTop" style="width: 100%;display: none;z-index: 9999;position: absolute">
+		<div id="errors" style="background-color: #006080;position: relative;padding: 10px;border: 2px solid white;width: 600px;height: 300px;max-height: 400px;overflow-y: scroll;margin: auto;display: flex;flex-direction: column;justify-content: center;">
+			<p></p>
+			<p onclick="closeErrors()" style="position: absolute;top: 8px;right: 18px;"><i class="fas fa-times"></i></p>
+		</div>
 	</div>
 	<!-- <div style="position: absolute;bottom: 0;margin-left: 29%;">
 				<button onclick="extractPdfBarcodes()" type="button" value="Extract Barcodes" class="inputbutton" > Extract PDF Barcodes</button>
@@ -79,13 +89,27 @@
 
 		}
 		extractPdfBarcodes = () =>{
+			console.log("ahah")
+			pdfBtn =  document.getElementById("pdfBtn")
+			pdfBtn.disabled = true
 			if(pdfBase64 !== ""){
 				$.ajax({
 					url: "/pdfBase64GetData",
 					type: "POST",
 					data: { text: pdfBase64 }
 				})
-				.then(res=>alert("Scanning Operation Is Completed."))
+				.then(res=>{
+					id = document.getElementById("errors")
+					
+					if(res.msgs.length !== 0){
+						document.getElementById("errorTop").style.display = "block"
+					}	
+					res.msgs.forEach(elem=>{
+						id.innerHTML += `<p style='color: white;'>${elem}</p>`
+					})
+					pdfBtn.disabled = false
+					console.log(res)
+				})
 			}else{
 				alert("Kindly Upload A Pdf First")
 			}
@@ -112,14 +136,11 @@
 			}
 
 			reader.readAsDataURL(document.getElementById(id).files[0]);
-			
-			reader.onloadstart = () => {
-			console.log("load start")
-			}
-			reader.onloadend = () => {
-			console.log("load end")
-			} 
     
-        	}
+			}
+			closeErrors =() =>{
+				id = document.getElementById("errors")
+				id.style.display = "none"
+			}
 	 </script>
 </html>

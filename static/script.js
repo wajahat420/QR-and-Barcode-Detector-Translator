@@ -10,7 +10,6 @@ function showDetails(itemID){
       for(i=0;i<ids.length;i++){
         otherId = document.getElementById(ids[i])
         if(itemID != ids[i]){
-            // console.log("ids[i]",ids[i])
             otherId.className  = " d-none"
           }
       }
