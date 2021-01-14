@@ -43,14 +43,12 @@ def scan_with_picture(imgURL=''):
 
       # image =  cv.imdecode(buf_arr, cv.IMREAD_UNCHANGED)
 
- 
       image = cv.imread("actual.jpg")
       
       height, width = image.shape[:2]
       # if height > 2000:
       #       image = cv.resize(image, (1100,1700) , interpolation = cv.INTER_AREA)
-      print(image.shape)
-
+      # print(image.shape)
 
       #  finding first top barcodes of operation and operator to get their position
       barcodes = decode(image)
@@ -63,7 +61,7 @@ def scan_with_picture(imgURL=''):
             barcodeData = barcode.data.decode("utf-8")
             top = barcode.rect.top
             left = barcode.rect.left  
-            print(barcodeData,left,top)
+            # print(barcodeData,left,top)
 
             if left > operationStartPos[1] + margin : #checking it is opeartor or not
                   if operatorStartPos[0] == 0 or top < operatorStartPos[0]:
@@ -106,7 +104,6 @@ def scan_with_picture(imgURL=''):
       cv.waitKey(0)
       operationData =  getOperationData(imageSplittedInRows["operationImgs"])
       operatorData =  getOperatorData(imageSplittedInRows["operatorImgs"])
-      print("")
       with open('barcodes_image.csv', mode='w',newline="") as file:
             writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             writer.writerow(["DATE", "OPERATION","OPERATOR"])

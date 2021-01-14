@@ -43,7 +43,7 @@ def getOperatorData(imgsArr):
 def scan_with_pdf():
     global img, initial_start, data, all_y, index, iter_no
 
-    pages = convert_from_path('test1.pdf', 500)
+    pages = convert_from_path('Barcodes - Sheet1.pdf', 500)
 
     count = 0
     for page in pages:

@@ -46,15 +46,15 @@ def scan_with_picture(imgURL=''):
       # gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
       # (thresh, blackAndWhiteImage) = cv.threshold(gray, 127, 255, cv.THRESH_BINARY)
 
-      image = cv.imread("2.jpg")
+      image = cv.imread("final.png")
       print(image.shape)
 
       height, width = image.shape[:2]
-      if height > 2000:
-            image = cv.resize(image, (1200,1900) , interpolation = cv.INTER_AREA)
-      height, width = image.shape[:2]
+      # if height > 2000:
+      #       image = cv.resize(image, (1200,1900) , interpolation = cv.INTER_AREA)
+      # height, width = image.shape[:2]
 
-      image =  image[:,:int(width*0.5)]  #int(width*0.48)
+      image =  image[:1500,:int(width*0.5)]  #int(width*0.48)
       cv.imshow("Threshold", image) 
       cv.waitKey(0)  
       cv.destroyAllWindows()
@@ -85,8 +85,8 @@ def scan_with_picture(imgURL=''):
                         operation[1] = left
             print("barcode",barcodeData,"top",top,"left",left)
             
-      print("operation",operation)
-      print("operator",operator)
+      # print("operation",operation)
+      # print("operator",operator)
 
           
 scan_with_picture("")

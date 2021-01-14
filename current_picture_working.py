@@ -105,13 +105,13 @@ def scan_with_picture(imgURL=''):
 
             start2 += operatorDistance
             start1 += operationDistance
-            cv.imshow('img'+str(i), tempOperator)
+            # cv.imshow('img'+str(i), tempOperator)
                   # print("works",tempOperator.shape)
       
       cv.waitKey(0)
       operationData =  getOperationData(imageSplittedInRows["operationImgs"])
       operatorData =  getOperatorData(imageSplittedInRows["operatorImgs"])
-      print(len(operationData))
+      # print(len(operationData))
       with open('barcodes_image.csv', mode='w',newline="") as file:
             writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             writer.writerow(["DATE", "OPERATION","OPERATOR"])
