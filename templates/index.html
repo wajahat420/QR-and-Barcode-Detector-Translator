@@ -25,6 +25,31 @@
 		 .fa-times:hover{
 			 color: white;
 		 }
+		 .errors{
+			width: 100%;
+			display: flex;
+			border: 2px solid white;
+			margin: auto;
+			width: 600px;
+			height: 300px;
+			max-height: 400px;
+			background-color: #006080;
+			overflow-y: scroll;
+			margin: auto;
+			flex-direction: column;
+			padding: 15px;
+			/* justify-content: center; */
+		 }
+		 .errorTop{
+			width: 100%;
+			position: absolute;
+			display: flex;
+			z-index: 99999;
+			justify-content: center;
+			align-items: center;
+			align-content: center;
+			align-self: center;
+		 }
 	 </style>
 	 
 </head>
@@ -60,10 +85,10 @@
 				<button onclick="extractImageBarcodes()" type="button" value="Extract Barcodes" class="inputbutton" > Extract IMG Barcodes</button>
 			</div>	
 	</div>
-	<div id="errorTop" style="width: 100%;display: none;z-index: 9999;position: absolute">
-		<div id="errors" style="background-color: #006080;position: relative;padding: 10px;border: 2px solid white;width: 600px;height: 300px;max-height: 400px;overflow-y: scroll;margin: auto;display: flex;flex-direction: column;justify-content: center;">
-			<p></p>
-			<p onclick="closeErrors()" style="position: absolute;top: 8px;right: 18px;"><i class="fas fa-times"></i></p>
+	<div id="errorTop" class="errorTop">
+		<p onclick="closeErrors()" style="position: absolute;top: 8px;margin-left: 76%;z-index: 9999999;"><i class="fas fa-times"></i></p>
+		<div id="errors" class="errors">
+				<p></p>
 		</div>
 	</div>
 	<!-- <div style="position: absolute;bottom: 0;margin-left: 29%;">
@@ -73,6 +98,8 @@
 
 	</body>
 	<script>
+		const errorDivID = document.getElementById("errorTop")
+		const id = document.getElementById("errors")
 		let imageBase64 = ""
 		let pdfBase64 = ""
 		extractImageBarcodes = () =>{
@@ -82,14 +109,18 @@
 					type: "POST",
 					data: { text: imageBase64 }
 				})
-				.then(res=>alert("Scanning Operation Is Completed."))
+				.then(res=>{
+					console.log(res)
+					renderErrors(res)
+					alert("Scanning Operation Is Completed.")
+				})
 			}else{
 				alert("Kindly Upload An Image First")
+				
 			}
 
 		}
 		extractPdfBarcodes = () =>{
-			console.log("ahah")
 			pdfBtn =  document.getElementById("pdfBtn")
 			pdfBtn.disabled = true
 			if(pdfBase64 !== ""){
@@ -99,16 +130,10 @@
 					data: { text: pdfBase64 }
 				})
 				.then(res=>{
-					id = document.getElementById("errors")
-					
-					if(res.msgs.length !== 0){
-						document.getElementById("errorTop").style.display = "block"
-					}	
-					res.msgs.forEach(elem=>{
-						id.innerHTML += `<p style='color: white;'>${elem}</p>`
-					})
 					pdfBtn.disabled = false
+					renderErrors(res)
 					console.log(res)
+					alert("Scanning Operation Is Completed.")
 				})
 			}else{
 				alert("Kindly Upload A Pdf First")
@@ -131,7 +156,9 @@
 						type: "POST",
 						data: { text: pdfBase64 }
 					})
-					.then(res=>console.log(res))
+					.then(res=>{
+						console.log(res)
+					})
 				}
 			}
 
@@ -139,8 +166,19 @@
     
 			}
 			closeErrors =() =>{
-				id = document.getElementById("errors")
-				id.style.display = "none"
+				errorDivID.style.display = "none"
+			}
+			renderErrors = (res)=>{
+				if(res.msgs.length !== 0){
+						errorDivID.style.display = "block"
+					}	
+					res.msgs.forEach((elem,index)=>{
+						if(index == 0){
+							id.innerHTML = `<p style='color: white;'>${elem}</p>`
+						}else{
+							id.innerHTML += `<p style='color: white;'>${elem}</p>`
+						}
+				})
 			}
 	 </script>
 </html>

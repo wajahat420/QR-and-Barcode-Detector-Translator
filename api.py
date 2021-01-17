@@ -9,8 +9,8 @@ from pdf import *
 def imageBase64():
 
     imageURL = request.form['text']
-    scan_with_picture(imageURL) 
-    return "response from imageBase64"
+    msgs = scan_with_picture(imageURL) 
+    return {"msgs" : msgs}
 
 
 @app.route("/pdfBase64Upload", methods=["POST"])
@@ -23,7 +23,7 @@ def pdfBase64():
 @app.route("/pdfBase64GetData", methods=["POST"])
 def pdfBase64GetData():
     msgs =  scan_with_pdf()
-    print(len(msgs),"length")
+    print(len(msgs),"length",msgs)
     return {"msgs" : msgs}
 
 @app.route('/')

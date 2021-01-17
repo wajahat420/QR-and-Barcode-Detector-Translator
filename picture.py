@@ -64,19 +64,28 @@ def getScannedData(imgsArr, counter):
                     internalCount += 1
 
         counter += 1
+def emprtyAllArrays():
+    global bothMissing, moreThanTwo, operationMissing, operatorMissing, data
+    bothMissing = []
+    moreThanTwo  =[]
+    operatorMissing = []
+    operationMissing = []
+    data = []
+
 def scan_with_picture(imgURL=''):
+    emprtyAllArrays()
     global bothMissing, operatorMissing, operationMissing, data
-      # comma = imgURL.find(",")
-      # imgURL = imgURL[comma+1:]
-      # imgURL = bytes(imgURL, 'utf-8')
+    comma = imgURL.find(",")
+    imgURL = imgURL[comma+1:]
+    imgURL = bytes(imgURL, 'utf-8')
 
-      # buf_decode = base64.b64decode(imgURL)
-      # buf_arr = np.fromstring(buf_decode, dtype=np.uint8)
+    buf_decode = base64.b64decode(imgURL)
+    buf_arr = np.fromstring(buf_decode, dtype=np.uint8)
 
-      # image =  cv.imdecode(buf_arr, cv.IMREAD_UNCHANGED)
+    image =  cv.imdecode(buf_arr, cv.IMREAD_UNCHANGED)
 
  
-    image = cv.imread("finalMnD.png")
+    # image = cv.imread("finalMnD.png")
     
     height, width = image.shape[:2]
     # if height > 2000:
@@ -114,8 +123,7 @@ def scan_with_picture(imgURL=''):
     print("operation",operationMissing)
     print("moreThanTwo",moreThanTwo)
     print("data",len(data))
-    # operatorData =  getOperatorData(imageSplittedInRows["operatorImgs"])
-    # print(len(operationData))
+
     with open('barcodes_image.csv', mode='w',newline="") as file:
         writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(["DATE", "OPERATION","OPERATOR"])
@@ -130,7 +138,17 @@ def scan_with_picture(imgURL=''):
                 # else:
                 print(obj)
                 writer.writerow([obj["s.no"],obj["operation"], obj["operation"],datetime.datetime.now()])
+    msgs = []
+    for i in bothMissing:
+        msgs.append("Error: Both Missing in "+str(i+1)+" row")
+    for i in operationMissing:
+        msgs.append("Error: Operation Missing in "+str(i+1)+" row")
+    for i in operatorMissing:
+        msgs.append("Error: Operator Missing in "+str(i+1)+" row")
+    for i in moreThanTwo:
+        msgs.append("Error: More than two barcodes exists in "+str(i+1)+" row")  
 
+    return msgs
 # scan_with_picture("")
 
 

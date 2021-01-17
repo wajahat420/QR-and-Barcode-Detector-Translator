@@ -24,9 +24,7 @@ def getScannedData(imgsArr, counter):
     for image in imgsArr:
         # print("=>",data)
         barcodes = decode(image)
-        # print("check",len(barcodes))
 
-        print(len(barcodes),counter)
         oneFound = False
         if len(barcodes) == 0:
                 bothMissing.append(counter)
@@ -68,21 +66,33 @@ def getScannedData(imgsArr, counter):
                                 data[len(data)-1]["s.no"] = counter
                                 internalCount = -1
                     internalCount += 1
-
         counter += 1
-def scan_with_pdf():
+        bothMissing.sort()
+        operationMissing.sort()
+        operatorMissing.sort()
+        moreThanTwo.sort()
 
+def emprtyAllArrays():
+    global bothMissing, moreThanTwo, operationMissing, operatorMissing, data
+    bothMissing = []
+    moreThanTwo  =[]
+    operatorMissing = []
+    operationMissing = []
+    data = []
+
+def scan_with_pdf():
     pages = convert_from_path('generated.pdf', 300)
     pagesArr  = []
     count = 0
+    msgs = []
+
     for page in pages:
         count += 1
         pagesArr.append(page)
         page.save(str(count)+'.jpg', 'JPEG')
-
     for x in range(count):
+        emprtyAllArrays()
         image = cv.imread(str(x+1)+".jpg")
-
         column1 = image[690:,220:1340] 
         column2 = image[690:,1290:] 
 
@@ -113,31 +123,28 @@ def scan_with_pdf():
         print("operation",operationMissing)
         print("moreThanTwo",moreThanTwo)
         print("data",len(data))
-
+        if len(bothMissing) != 0 or len(operationMissing) != 0 or len(operatorMissing) != 0 or len(moreThanTwo) != 0:
+            msgs.append("Page-"+str(x+1)+" Errors bolow:")
+        for i in bothMissing:
+            msgs.append("Error: Both Missing in "+str(i+1)+" row")
+        for i in operationMissing:
+            msgs.append("Error: Operation Missing in "+str(i+1)+" row")
+        for i in operatorMissing:
+            msgs.append("Error: Operator Missing in "+str(i+1)+" row")
+        for i in moreThanTwo:
+            msgs.append("Error: More than two barcodes exists in "+str(i+1)+" row")  
+        # msgs.extend(tempMsgs)
+        # print("length of msgs: ",len(msgs),msgs)
   
     with open('barcodes_image.csv', mode='w',newline="") as file:
         writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         writer.writerow(["DATE", "OPERATION","OPERATOR"])
         
         for obj in data:
-                # print("operator : ",operatorData[i],"operation : ",operationData[i])
-                
-                # if operatorData[i] == "":
-                #     print(str(i+1)+" row Operator Missing")
-                # elif  operationData[i] == "":
-                #     print(str(i+1)+" row Operation Missing")
-                # else:
                 print(obj)
                 writer.writerow([obj["s.no"],obj["operation"], obj["operation"],datetime.datetime.now()])
-    msgs = []
-    for i in bothMissing:
-        msgs.append("Error: Both Missing in "+str(i+1)+" row")
-    for i in operationMissing:
-        msgs.append("Error: Operation Missing in "+str(i+1)+" row")
-    for i in operatorMissing:
-        msgs.append("Error: Operator Missing in "+str(i+1)+" row")
-    for i in moreThanTwo:
-        msgs.append("Error: More than two barcodes exists in "+str(i+1)+" row")  
+    
+
 
     return msgs
 # scan_with_pdf()
