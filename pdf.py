@@ -11,6 +11,7 @@ operatorMissing  =[]
 operationMissing = []
 moreThanTwo = []
 data = []
+header = ""
 
 def convertBase64ToPdf(pdfURL):
     comma = pdfURL.find(",")
@@ -20,7 +21,7 @@ def convertBase64ToPdf(pdfURL):
         theFile.write(base64.b64decode(pdfURL))
 
 def getScannedData(imgsArr, counter):
-    global bothMissing, operatorMissing, operationMissing, data
+    global bothMissing, operatorMissing, operationMissing, data, header
     for image in imgsArr:
         # print("=>",data)
         barcodes = decode(image)
@@ -55,6 +56,7 @@ def getScannedData(imgsArr, counter):
                                 # print("else 2")
                                 data[len(data)-1]["operator"] = barcodeData
                                 data[len(data)-1]["s.no"] = counter
+                                data[len(data)-1]["header"] = header
                                 internalCount  = -1
                         else: 
                             if internalCount == 0:
@@ -64,6 +66,8 @@ def getScannedData(imgsArr, counter):
                                 # print("else 2")
                                 data[len(data)-1]["operation"] = barcodeData
                                 data[len(data)-1]["s.no"] = counter
+                                data[len(data)-1]["header"] = header
+
                                 internalCount = -1
                     internalCount += 1
         counter += 1
@@ -81,6 +85,7 @@ def emprtyAllArrays():
     data = []
 
 def scan_with_pdf():
+    global header
     pages = convert_from_path('generated.pdf', 300)
     pagesArr  = []
     count = 0
@@ -95,6 +100,12 @@ def scan_with_pdf():
         image = cv.imread(str(x+1)+".jpg")
         column1 = image[690:,220:1340] 
         column2 = image[690:,1290:] 
+
+        headerImg = image[:660,:]
+        header = decode(headerImg)[0].data.decode("utf-8")
+        print("header ==",header)
+        # cv.imshow('col', header)
+        # cv.waitKey(0)
 
         col1_array = []
         col2_array = []
@@ -112,8 +123,7 @@ def scan_with_pdf():
             start += betweenDist    
             col1_array.append(col1)
             col2_array.append(col2)
-        #     cv.imshow('col'+str(i), col2)
-        # cv.waitKey(0)
+
 
         col1 =  getScannedData(col1_array, counter=0)
         col2 =  getScannedData(col2_array, counter=12)
@@ -136,17 +146,17 @@ def scan_with_pdf():
         # msgs.extend(tempMsgs)
         # print("length of msgs: ",len(msgs),msgs)
   
-    with open('barcodes_image.csv', mode='w',newline="") as file:
+    with open('barcodes_pdf.csv', mode='w',newline="") as file:
         writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(["DATE", "OPERATION","OPERATOR"])
+        writer.writerow(["S.no","OPERATION","OPERATOR","HEADER","DATE"])
         
         for obj in data:
-                print(obj)
-                writer.writerow([obj["s.no"],obj["operation"], obj["operation"],datetime.datetime.now()])
+                # print(obj)
+                writer.writerow([obj["s.no"],obj["operation"], obj["operator"],obj["header"],datetime.datetime.now()])
     
 
 
     return msgs
-# scan_with_pdf()
+scan_with_pdf()
 
 
