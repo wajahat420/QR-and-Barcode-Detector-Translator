@@ -157,6 +157,6 @@ def scan_with_pdf():
 
 
     return msgs
-scan_with_pdf()
+
 
 
