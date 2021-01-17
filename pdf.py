@@ -83,6 +83,7 @@ def emprtyAllArrays():
     operatorMissing = []
     operationMissing = []
     data = []
+    header = ""
 
 def scan_with_pdf():
     global header
@@ -90,13 +91,13 @@ def scan_with_pdf():
     pagesArr  = []
     count = 0
     msgs = []
+    emprtyAllArrays()
 
     for page in pages:
         count += 1
         pagesArr.append(page)
         page.save(str(count)+'.jpg', 'JPEG')
     for x in range(count):
-        emprtyAllArrays()
         image = cv.imread(str(x+1)+".jpg")
         column1 = image[690:,220:1340] 
         column2 = image[690:,1290:] 
